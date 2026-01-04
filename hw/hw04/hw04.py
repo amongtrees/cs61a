@@ -165,6 +165,10 @@ def max_path_sum(t):
     17
     """
     "*** YOUR CODE HERE ***"
+    if is_leaf(t):
+        return label(t)
+    else:
+        return max([label(t) + max_path_sum(branch) for branch in branches(t)])
 
 
 def mobile(left, right):
