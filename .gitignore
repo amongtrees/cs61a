@@ -5,3 +5,5 @@
 .ok*
 __pycache__/
 .vscode/
+tests/
+lib/
