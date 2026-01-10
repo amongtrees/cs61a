@@ -114,8 +114,10 @@ class Ant(Insect):
     
     # END Problem 8a
 
-    def __init__(self, health: int = 1):
+    def __init__(self, health: int = 1, is_doubled: bool = False):
         super().__init__(health)
+        self.is_doubled = is_doubled
+        self.ant_contained = None
 
     def can_contain(self, other: Ant) -> bool:
         return False
@@ -155,6 +157,9 @@ class Ant(Insect):
         """Double this ants's damage, if it has not already been doubled."""
         # BEGIN Problem 12
         "*** YOUR CODE HERE ***"
+        if not self.is_doubled:
+            self.damage *= 2
+            self.is_doubled = True
         # END Problem 12
 
 
@@ -435,6 +440,14 @@ class Water(Place):
 
 # BEGIN Problem 11
 # The ScubaThrower class
+class ScubaThrower(ThrowerAnt):
+    name = 'Scuba'
+    food_cost = 6
+    is_waterproof = True
+    implemented = True
+
+    def __init__(self, health: int = 1):
+        super().__init__(health)
 # END Problem 11
 
 
@@ -445,7 +458,7 @@ class QueenAnt(ThrowerAnt):
     food_cost = 7
     # OVERRIDE CLASS ATTRIBUTES HERE
     # BEGIN Problem 12
-    implemented = False   # Change to True to view in the GUI
+    implemented = True   # Change to True to view in the GUI
     # END Problem 12
 
     def action(self, gamestate: GameState):
@@ -454,6 +467,18 @@ class QueenAnt(ThrowerAnt):
         """
         # BEGIN Problem 12
         "*** YOUR CODE HERE ***"
+        super().action(gamestate)
+        if self.place:
+            behind = self.place.exit
+        while behind:
+            ant_here = behind.ant
+            if ant_here and not ant_here.is_container:
+                ant_here.double()
+            elif ant_here and ant_here.is_container:
+                if ant_here.ant_contained:
+                    ant_here.ant_contained.double()
+                ant_here.double()
+            behind = behind.exit
         # END Problem 12
 
     def reduce_health(self, amount: float):
@@ -462,6 +487,9 @@ class QueenAnt(ThrowerAnt):
         """
         # BEGIN Problem 12
         "*** YOUR CODE HERE ***"
+        super().reduce_health(amount)
+        if self.health <= 0:
+            ants_lose()
         # END Problem 12
 
 
